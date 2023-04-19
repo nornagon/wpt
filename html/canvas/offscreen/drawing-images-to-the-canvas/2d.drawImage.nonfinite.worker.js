@@ -7,31 +7,25 @@
 importScripts("/resources/testharness.js");
 importScripts("/html/canvas/resources/canvas-tests.js");
 
-var t = async_test("drawImage() with Infinity/NaN is ignored");
-var t_pass = t.done.bind(t);
-var t_fail = t.step_func(function(reason) {
-    throw reason;
-});
-t.step(function() {
+promise_test(async t => {
 
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
 ctx.fillStyle = '#0f0';
 ctx.fillRect(0, 0, 100, 50);
-fetch('/images/redtransparent.png')
-  .then(response => response.blob())
-    .then(blob => {
-      createImageBitmap(blob)
-        .then(bitmap => {
-        ctx.drawImage(bitmap, Infinity, 0);
+const response = await fetch('/images/redtransparent.png');
+const blob = await response.blob();
+const bitmap = await createImageBitmap(blob);
+
+ctx.drawImage(bitmap, Infinity, 0);
 ctx.drawImage(bitmap, -Infinity, 0);
 ctx.drawImage(bitmap, NaN, 0);
 ctx.drawImage(bitmap, 0, Infinity);
 ctx.drawImage(bitmap, 0, -Infinity);
 ctx.drawImage(bitmap, 0, NaN);
 ctx.drawImage(bitmap, Infinity, Infinity);
-        ctx.drawImage(bitmap, Infinity, 0, 100, 50);
+ctx.drawImage(bitmap, Infinity, 0, 100, 50);
 ctx.drawImage(bitmap, -Infinity, 0, 100, 50);
 ctx.drawImage(bitmap, NaN, 0, 100, 50);
 ctx.drawImage(bitmap, 0, Infinity, 100, 50);
@@ -54,7 +48,7 @@ ctx.drawImage(bitmap, 0, Infinity, Infinity, 50);
 ctx.drawImage(bitmap, 0, Infinity, Infinity, Infinity);
 ctx.drawImage(bitmap, 0, Infinity, 100, Infinity);
 ctx.drawImage(bitmap, 0, 0, Infinity, Infinity);
-        ctx.drawImage(bitmap, Infinity, 0, 100, 50, 0, 0, 100, 50);
+ctx.drawImage(bitmap, Infinity, 0, 100, 50, 0, 0, 100, 50);
 ctx.drawImage(bitmap, -Infinity, 0, 100, 50, 0, 0, 100, 50);
 ctx.drawImage(bitmap, NaN, 0, 100, 50, 0, 0, 100, 50);
 ctx.drawImage(bitmap, 0, Infinity, 100, 50, 0, 0, 100, 50);
@@ -325,10 +319,7 @@ ctx.drawImage(bitmap, 0, 0, 100, 50, 0, Infinity, Infinity, 50);
 ctx.drawImage(bitmap, 0, 0, 100, 50, 0, Infinity, Infinity, Infinity);
 ctx.drawImage(bitmap, 0, 0, 100, 50, 0, Infinity, 100, Infinity);
 ctx.drawImage(bitmap, 0, 0, 100, 50, 0, 0, Infinity, Infinity);
-        _assertPixel(canvas, 50,25, 0,255,0,255);
-    });
-});
+_assertPixel(canvas, 50,25, 0,255,0,255);
 t.done();
-
-});
+}, "drawImage() with Infinity/NaN is ignored");
 done();

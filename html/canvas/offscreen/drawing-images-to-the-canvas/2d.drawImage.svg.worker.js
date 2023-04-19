@@ -17,16 +17,21 @@ t.step(function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-fetch('/images/green.svg')
-  .then(response => response.blob())
-    .then(blob => {
-      createImageBitmap(blob)
-        .then(bitmap => {
-        ctx.drawImage(bitmap, 0, 0);
-        _assertPixelApprox(canvas, 50,25, 0,255,0,255, 2);
-    });
+var promise = new Promise(function(resolve, reject) {
+var xhr = new XMLHttpRequest();
+xhr.open("GET", '/images/green.svg');
+xhr.responseType = 'blob';
+xhr.send();
+xhr.onload = function() {
+    resolve(xhr.response);
+};
 });
-t.done();
+promise.then(function(response) {
+createImageBitmap(response).then(bitmap => {
+    ctx.drawImage(bitmap, 0, 0);
+    _assertPixelApprox(canvas, 50,25, 0,255,0,255, 2);
+}, t_fail);
+}).then(t_pass, t_fail);
 
 });
 done();

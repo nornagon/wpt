@@ -150,21 +150,17 @@
 
 
 - name: 2d.composite.globalAlpha.image
-  canvasType: ['OffscreenCanvas']
+  test_type: promise
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
     ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
-    fetch('/images/red.png')
-      .then(response => response.blob())
-        .then(blob => {
+    const response = await fetch('/images/red.png');
+    const blob = await response.blob();
+    const bitmap = await createImageBitmap(blob);
 
-        createImageBitmap(blob)
-          .then(bitmap => {
-            ctx.drawImage(bitmap, 0, 0);
-            @assert pixel 50,25 ==~ 2,253,0,255;
-        });
-    });
+    ctx.drawImage(bitmap, 0, 0);
+    @assert pixel 50,25 ==~ 2,253,0,255;
   expected: green
 
 - name: 2d.composite.globalAlpha.canvas
@@ -181,22 +177,18 @@
     @assert pixel 50,25 ==~ 2,253,0,255;
 
 - name: 2d.composite.globalAlpha.imagepattern
-  canvasType: ['OffscreenCanvas']
+  test_type: promise
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
-    fetch('/images/red.png')
-      .then(response => response.blob())
-        .then(blob => {
+    const response = await fetch('/images/red.png');
+    const blob = await response.blob();
+    const bitmap = await createImageBitmap(blob);
 
-        createImageBitmap(blob)
-          .then(bitmap => {
-            ctx.fillStyle = ctx.createPattern(bitmap, 'no-repeat');
-            ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
-            ctx.fillRect(0, 0, 100, 50);
-            @assert pixel 50,25 ==~ 2,253,0,255;
-        });
-    });
+    ctx.fillStyle = ctx.createPattern(bitmap, 'no-repeat');
+    ctx.globalAlpha = 0.01; // avoid any potential alpha=0 optimisations
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 50,25 ==~ 2,253,0,255;
   expected: green
 
 - name: 2d.composite.globalAlpha.canvaspattern
