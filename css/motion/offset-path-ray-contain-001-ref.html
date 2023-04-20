@@ -14,7 +14,10 @@
         width: 100px;
         height: 100px;
         background-color: lime;
-        transform: rotate(0deg) translate(50px, -150px);
+        /* ray length is sqrt(150^2 + 150^2); contain does -max(100, 100) / 2; */
+        /* the result length is 162.132. cos(45deg) * length = 114.645; */
+        /* 50 is origin shift. */
+        transform: rotate(0) translate(64.645px, -164.645px);
       }
     </style>
   </head>
